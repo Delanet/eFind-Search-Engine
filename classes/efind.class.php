@@ -265,7 +265,28 @@ class eFindSpeedSearch {
 
 			// Разбираем ответ
             foreach ($arrRowsOrder as $id) {
+				
+				// Удаляем дубли розничных и мелкооптовых количеств
+				if ($arrRows[$id]['sapidata_amount1'] == $arrRows[$id]['sapidata_amount2']) {
+					$arrRows[$id]['sapidata_price1'] = 0;
+				}
+				
+				// При наличии MOQ > розничного кол-ва - проводим пересмотр количеств
+				if ($arrRows[$id]['sapidata_moq'] > $arrRows[$id]['sapidata_amount1']) {
+					
+					$arrRows[$id]['sapidata_price1'] = 0;
+					$arrRows[$id]['sapidata_amount1'] = 0;
 
+					if ($arrRows[$id]['sapidata_amount2'] > $arrRows[$id]['sapidata_moq']) {
+						$arrRows[$id]['sapidata_amount2'] = $arrRows[$id]['sapidata_moq'];
+					} else {
+						$arrRows[$id]['sapidata_price2'] = 0;
+						$arrRows[$id]['sapidata_amount2'] = 0;
+						$arrRows[$id]['sapidata_amount3'] = $arrRows[$id]['sapidata_moq'];
+					}
+				}
+
+				// Начинаем формирование вывода
                 $this->strOutputData .= '<item>';
 
                 // Название позиции
@@ -302,10 +323,7 @@ class eFindSpeedSearch {
 
 				// Розничная цена
 				if (!empty ($arrRows[$id]['sapidata_price1'])) {
-					// Если розничное кол-во == м.оптовому, то пропускаем строку
-					if ($arrRows[$id]['sapidata_amount1'] != $arrRows[$id]['sapidata_amount2']) {
-						$this->strOutputData .= "<pb qty=\"{$arrRows[$id]['sapidata_amount1']}\">{$arrRows[$id]['sapidata_price1']}</pb>";
-					}
+					$this->strOutputData .= "<pb qty=\"{$arrRows[$id]['sapidata_amount1']}\">{$arrRows[$id]['sapidata_price1']}</pb>";
 				}
 
                 // Мелкооптовая цена
