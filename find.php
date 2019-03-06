@@ -1,10 +1,10 @@
 <?php
 
 // Подключаем файл конфигурации
-require_once ("config.php");
+require_once ('config.php');
 
 // Подгружаем класс кластерного поиска
-require_once ("classes/efind.class.php");
+require_once ('classes/efind.class.php');
 
 // Создаем новый объект
 $sapi = new eFindSpeedSearch();
@@ -14,7 +14,7 @@ $sapi->init_search($dbs, $ses['efind']);
 
 // Подключаемся к БД
 if (!$sapi->openDB($dbs)) {
-	// Ошибка подключения к БД
+    // Ошибка подключения к БД
     echo $sapi->error500();
     exit;
 }
@@ -32,5 +32,3 @@ echo '<?xml version="1.0" encoding="utf-8" ?><data version="2.0">' . $xmlResponc
 
 // Завершаем выполнение скрипта
 exit;
-
-?>
